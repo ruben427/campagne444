@@ -5,9 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>444 &mdash; Yes Girl! Tijd voor zichtbaarheid</title>
 <meta name="description" content="Vier plekken, vier dagen voor mijn verjaardag: een eenmalige Birthday Edition fotoshoot voor 444 euro.">
+
+<!-- Favicon, gemaakt van de paarse "4" (img/favicon.png bronbestand: 64x64,
+     opgeschaald naar apple-touch-icon 180x180 -- vlak vormpje, dus geen
+     zichtbaar kwaliteitsverlies) -->
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="img/favicon-48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+
+<!-- Social-preview (Open Graph + Twitter Card) -- gebruikt de "Yes Girl!"-heroafbeelding,
+     die toevallig al exact 1200x630 is (de aanbevolen OG-afbeeldingmaat).
+     Pagina draait op het subdomein yesgirl.solike.nl (definitief, 2026-08-26 --
+     eerder kort geprobeerd als subpad www.solike.nl/campagne444, weer
+     teruggedraaid) -- og:url en de afbeelding-URL's staan daarop. -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yesgirl.solike.nl/">
+<meta property="og:title" content="444 &mdash; Yes Girl! Tijd voor zichtbaarheid">
+<meta property="og:description" content="Vier plekken, vier dagen voor mijn verjaardag: een eenmalige Birthday Edition fotoshoot voor 444 euro.">
+<meta property="og:image" content="https://yesgirl.solike.nl/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="nl_NL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="444 &mdash; Yes Girl! Tijd voor zichtbaarheid">
+<meta name="twitter:description" content="Vier plekken, vier dagen voor mijn verjaardag: een eenmalige Birthday Edition fotoshoot voor 444 euro.">
+<meta name="twitter:image" content="https://yesgirl.solike.nl/img/og-image.jpg">
+
+<!-- Google Analytics (GA4) met Consent Mode v2 -- meting staat standaard op
+     "denied" totdat de bezoeker in de cookiebalk onderaan de pagina kiest
+     (zie cookies.js voor die logica). Measurement ID: G-PM5LGWQM21. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PM5LGWQM21"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-PM5LGWQM21');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,35 +56,22 @@
   <div class="hero__inner">
     <div class="hero__copy">
       <div class="hero__title">
-        <h1>Yes Girl!</h1>
-        <p class="hero__kicker">Tijd voor zichtbaarheid</p>
+        <h1 data-key="hero.title">Yes Girl!</h1>
+        <p class="hero__kicker" data-key="hero.kicker">Tijd voor zichtbaarheid</p>
       </div>
 
       <ul class="stats" aria-label="Actievoorwaarden in cijfers">
-        <li class="stats__item">
-          <span class="stats__number">4</span>
-          <span class="stats__label">plekken</span>
-        </li>
-        <li class="stats__divider" aria-hidden="true"></li>
-        <li class="stats__item">
-          <span class="stats__number">44</span>
-          <span class="stats__label">assets</span>
-        </li>
-        <li class="stats__divider" aria-hidden="true"></li>
-        <li class="stats__item">
-          <span class="stats__number">444</span>
-          <span class="stats__label">euro</span>
-        </li>
+        <template data-list="hero.stats"></template>
       </ul>
 
       <div class="hero__cta">
-        <p class="hero__lead">Je bedrijf is gegroeid. Nu mag jouw zichtbaarheid meegroeien.</p>
-        <a class="btn btn--primary" href="#aanmelden">Yes, ik doe mee</a>
+        <p class="hero__lead" data-key="hero.lead">Je bedrijf is gegroeid. Nu mag jouw zichtbaarheid meegroeien.</p>
+        <a class="btn btn--primary" href="#aanmelden" data-key="hero.cta">Yes, ik doe mee</a>
       </div>
     </div>
 
     <div class="hero__media" aria-hidden="true">
-      <img class="hero__image" src="https://www.figma.com/api/mcp/asset/9fa098c3-d349-443e-bf3e-6f4d75bb9373.png" alt="">
+      <img class="hero__image" src="img/hero.png" srcset="img/hero.png 1x, img/hero@2x.png 2x" alt="">
     </div>
   </div>
 </header>
@@ -52,123 +79,200 @@
 <main>
 
   <section class="section why" id="waarom" aria-labelledby="waarom-titel">
-    <div class="portrait portrait--circle">
-      <img src="https://www.figma.com/api/mcp/asset/4cfd3764-d92a-4984-84ef-dcc9a351d701.png" alt="Annemarie lachend met een camera in haar hand">
+    <div class="photo-frame">
+      <div class="portrait portrait--circle">
+        <img src="img/portret-cirkel.jpg" srcset="img/portret-cirkel.jpg 1x, img/portret-cirkel@2x.jpg 2x" alt="Annemarie lachend met een camera in haar hand">
+      </div>
     </div>
     <div class="section__copy">
-      <h2 id="waarom-titel">Waarom 444</h2>
-      <p>Op 15 september word ik 44. Het getal 444 draag ik al jaren letterlijk bij me als tattoo en toevallig woon ik ook nog op nummer 4.</p>
-      <p>Voor mij staat 444 voor vertrouwen, richting en durven gaan. Niet wachten tot alles perfect is, maar zichtbaar maken wat er al staat.</p>
-      <p>Daarom open ik vier dagen voor mijn verjaardag vier plekken voor deze eenmalige Birthday Edition.</p>
+      <h2 id="waarom-titel" data-key="why.heading">Waarom 444</h2>
+      <template data-list="why.paragraphs"></template>
       <a class="scroll-cue scroll-cue--purple" href="#voor-jou" aria-label="Scroll naar volgende sectie"></a>
     </div>
   </section>
 
   <section class="section for-you" id="voor-jou" aria-labelledby="voor-jou-titel">
     <div class="for-you__inner">
-      <h2 id="voor-jou-titel">Is dit iets voor jou?</h2>
+      <h2 id="voor-jou-titel" data-key="forYou.heading">Is dit iets voor jou?</h2>
       <div class="for-you__body">
-        <p>Je bedrijf staat en je weet wat je te bieden hebt, maar je huidige content laat nog niet volledig zien wie je bent, hoe je werkt en waarom mensen juist bij jou moeten zijn.</p>
-        <p>Je wilt geen losse trucjes of een map vol willekeurige beelden. Je wilt een beeldvoorraad die bij jou past en die je op verschillende manieren kunt gebruiken.</p>
-        <blockquote class="quote">
-          <p>&ldquo;Je bedrijf staat en je</p>
-          <p>weet wat je te bieden&rdquo;</p>
-        </blockquote>
-        <p>Dit past bij jou als je een bestaand bedrijf en helder aanbod hebt, je online zichtbaarheid achterloopt op het niveau van je bedrijf en je bereid bent persoonlijk in beeld te komen en samen te creëren.</p>
+        <template data-list="forYou.bodyBefore"></template>
+      </div>
+      <blockquote class="quote">
+        <p data-key="forYou.quoteLineLeft">&ldquo;Je bedrijf staat en je</p>
+        <p data-key="forYou.quoteLineRight">weet wat je te bieden&rdquo;</p>
+      </blockquote>
+      <div class="for-you__body">
+        <p data-key="forYou.bodyAfterIntro">Dit past bij jou als je:</p>
+        <ul class="for-you__list">
+          <template data-list="forYou.bodyAfterList"></template>
+        </ul>
         <a class="scroll-cue scroll-cue--cream" href="#maken" aria-label="Scroll naar volgende sectie"></a>
       </div>
     </div>
   </section>
 
   <section class="section make" id="maken" aria-labelledby="maken-titel">
-    <div class="portrait portrait--circle">
-      <img src="https://www.figma.com/api/mcp/asset/4cfd3764-d92a-4984-84ef-dcc9a351d701.png" alt="Annemarie lachend met een camera in haar hand">
-    </div>
-    <div class="section__copy">
-      <h2 id="maken-titel">Dit gaan we maken</h2>
-      <p>We fotograferen en filmen vier uur op een locatie die bij jou en je merk past. Vooraf analyseer ik je bedrijf, website en socials en werk ik een creatieve richting en shootplan uit.</p>
-      <div class="make__list-wrap">
-        <p class="make__list-title">Daarna ontvang je:</p>
-        <ul class="arrow-list">
-          <li><span class="arrow-list__icon" aria-hidden="true"></span>44 bewerkte foto- en video-assets.</li>
-          <li><span class="arrow-list__icon" aria-hidden="true"></span>Een mix van portretten, details, beweging en verticale video.</li>
-          <li><span class="arrow-list__icon" aria-hidden="true"></span>Beelden met ruimte voor tekst, Stories, Reels en carrousels.</li>
-          <li><span class="arrow-list__icon" aria-hidden="true"></span>Een persoonlijk content-inzetplan.</li>
-          <li><span class="arrow-list__icon" aria-hidden="true"></span>Vier voorbeeldweken op basis van jouw contentpijlers.</li>
-        </ul>
+    <div class="make__row">
+      <div class="make__intro">
+        <div class="photo-frame">
+          <div class="portrait portrait--circle">
+            <img src="img/portret-cirkel.jpg" srcset="img/portret-cirkel.jpg 1x, img/portret-cirkel@2x.jpg 2x" alt="Annemarie lachend met een camera in haar hand">
+          </div>
+        </div>
+        <div class="section__copy">
+          <h2 id="maken-titel" data-key="make.heading">Dit mag je echt niet missen</h2>
+          <p data-key="make.intro">We fotograferen en filmen vier uur op een locatie die bij jou en je merk past. Vooraf analyseer ik je bedrijf, website en socials en werk ik een creatieve richting en shootplan uit.</p>
+          <p data-key="make.outro">Je ontvangt geen 44 kant-en-klare posts, maar een veelzijdige beeldvoorraad waarmee je langere tijd vooruit kunt.</p>
+        </div>
       </div>
-      <p>Je ontvangt geen 44 kant-en-klare posts, maar een veelzijdige beeldvoorraad waarmee je langere tijd vooruit kunt.</p>
-      <a class="scroll-cue scroll-cue--purple" href="#aanmelden" aria-label="Scroll naar volgende sectie"></a>
+
+      <div class="offer-card">
+        <img class="offer-card__badge" aria-hidden="true" alt="" data-src-key="make.card.badgeIcon" src="img/badge-korting.svg">
+
+        <div class="offer-card__body">
+          <div class="offer-card__title-row">
+            <h3 class="offer-card__title" data-key="make.card.title">44x jij zoals je bent</h3>
+            <span class="offer-card__title-spacer" aria-hidden="true"></span>
+          </div>
+
+          <div class="offer-card__content">
+            <p class="offer-card__desc">
+              <span id="make-card-desc" data-key="make.card.descShort"></span>
+              <button type="button" class="offer-card__toggle" id="make-card-desc-toggle" aria-expanded="false" data-key="make.card.readMore"></button>
+            </p>
+
+            <ul class="arrow-list offer-card__list">
+              <template data-list="make.card.listItems"></template>
+            </ul>
+
+            <p class="offer-card__price-note" data-key="make.card.priceNote">€ 1355 Extra Birthday korting</p>
+          </div>
+        </div>
+
+        <div class="offer-card__price">
+          <p class="offer-card__price-was">normaal <span class="offer-card__price-was-amount" data-key="make.card.priceWas">€ 1799</span></p>
+          <p class="offer-card__price-now" data-key="make.card.priceNow">€ 444</p>
+          <p class="offer-card__price-excl" data-key="make.card.priceExcl">Excl btw</p>
+        </div>
+
+        <a class="offer-card__cta btn btn--primary" href="#aanmelden" data-key="make.card.cta">Ik wil kans maken</a>
+        <p class="offer-card__scarcity" data-key="make.card.scarcity">Slechts 4 plaatsen beschikbaar</p>
+      </div>
     </div>
+
+    <a class="scroll-cue scroll-cue--purple" href="#aanmelden" aria-label="Scroll naar volgende sectie"></a>
   </section>
 
   <section class="section signup" id="aanmelden" aria-labelledby="signup-titel">
-    <div class="signup__portrait" aria-hidden="true">
-      <img src="https://www.figma.com/api/mcp/asset/cc6bfad1-df96-4cc8-b661-4b843fd0555b.png" alt="">
-    </div>
-    <div class="signup__card">
-      <div class="signup__intro">
-        <h2 id="signup-titel">Ja, ik doe mee!</h2>
-        <p>Mijn cadeau aan jullie.<br>Beter kan ik het niet vieren</p>
+    <div class="signup__row">
+      <div class="signup__portrait" aria-hidden="true">
+        <img src="img/aanmelden-foto.png" srcset="img/aanmelden-foto.png 1x, img/aanmelden-foto@2x.png 2x" alt="">
       </div>
 
-      <form class="signup__form" action="#" method="post">
-        <div class="field">
-          <label for="naam">Jouw naam</label>
-          <input type="text" id="naam" name="naam" placeholder="Voornaam, achternaam" required>
+      <div class="signup__stack">
+        <div class="signup__heading">
+          <h2 id="signup-titel" data-key="signup.heading">Ja, ik doe mee!</h2>
         </div>
 
-        <div class="field">
-          <label for="bedrijf">Bedrijfsnaam</label>
-          <input type="text" id="bedrijf" name="bedrijf" placeholder="Zoals je online te vinden bent." required>
-        </div>
+        <div class="signup__card">
+          <div class="signup__card-inner" id="signup-card-inner">
+            <p class="signup__cadeau"><span data-key="signup.cadeauLine1">Mijn cadeau aan jullie.</span><br><span data-key="signup.cadeauLine2">Beter kan ik het niet vieren</span></p>
 
-        <div class="field">
-          <label for="probleem">Online zichtbaarheid. Wat is volgens jou het probleem?</label>
-          <textarea id="probleem" name="probleem" rows="4" placeholder="Bijvoorbeeld, ik vind het lastig om mij zelf goed en authentiek op beeld te zetten"></textarea>
-        </div>
+            <form class="signup__form" id="signup-form" action="#" method="post" novalidate>
+            <div class="field" data-field="naam">
+              <label for="naam" data-key="signup.form.naamLabel">Jouw naam</label>
+              <input type="text" id="naam" name="naam" placeholder="Voornaam, achternaam" data-placeholder-key="signup.form.naamPlaceholder" required>
+              <p class="field__error" id="naam-error" role="alert"></p>
+            </div>
 
-        <div class="field field--checkbox">
-          <input type="checkbox" id="akkoord" name="akkoord" required>
-          <label for="akkoord">Ik ga akkoord met de <a href="#">actievoorwaarden</a> van deze leuke actie.</label>
-        </div>
+            <div class="field" data-field="email">
+              <label for="email" data-key="signup.form.emailLabel">E-mailadres</label>
+              <input type="email" id="email" name="email" placeholder="jij@bedrijf.nl" data-placeholder-key="signup.form.emailPlaceholder" required>
+              <p class="field__error" id="email-error" role="alert"></p>
+            </div>
 
-        <button type="submit" class="btn btn--primary btn--block">Meld mij direct aan</button>
-      </form>
+            <div class="field" data-field="bedrijf">
+              <label for="bedrijf" data-key="signup.form.bedrijfLabel">Bedrijfsnaam</label>
+              <input type="text" id="bedrijf" name="bedrijf" placeholder="Zoals je online te vinden bent." data-placeholder-key="signup.form.bedrijfPlaceholder" required>
+              <p class="field__error" id="bedrijf-error" role="alert"></p>
+            </div>
+
+            <div class="field" data-field="probleem">
+              <label for="probleem" data-key="signup.form.probleemLabel">Online zichtbaarheid. Wat is volgens jou het probleem?</label>
+              <textarea id="probleem" name="probleem" rows="4" maxlength="444" placeholder="Bijvoorbeeld, ik vind het lastig om mij zelf goed en authentiek op beeld te zetten" data-placeholder-key="signup.form.probleemPlaceholder"></textarea>
+              <p class="field__counter" id="probleem-counter">0/444</p>
+              <p class="field__error" id="probleem-error" role="alert"></p>
+            </div>
+
+            <div class="field field--checkbox" data-field="akkoord">
+              <input type="checkbox" id="akkoord" name="akkoord" required>
+              <label for="akkoord"><span data-key="signup.form.akkoordPrefix">Ik ga akkoord met de </span><a href="#" id="terms-link" data-key="signup.form.akkoordLinkText">actievoorwaarden</a><span data-key="signup.form.akkoordSuffix"> van deze leuke actie.</span></label>
+              <p class="field__error" id="akkoord-error" role="alert"></p>
+            </div>
+
+            <p class="signup__form-status" id="form-status" role="status" aria-live="polite"></p>
+
+            <button type="submit" class="btn btn--primary btn--block" id="signup-submit" data-key="signup.form.submit">Meld mij direct aan</button>
+            </form>
+          </div>
+
+          <div class="signup__success" id="signup-success" hidden>
+            <div class="signup__success-heading">
+              <p class="signup__success-title" data-key="signup.success.title">Bedankt!</p>
+              <p class="signup__success-subtitle" data-key="signup.success.subtitle">Ik heb je aanmelding ontvangen</p>
+            </div>
+            <div class="signup__success-body">
+              <template data-list="signup.success.paragraphs"></template>
+            </div>
+            <button type="button" class="btn btn--primary signup__success-close" id="signup-success-close" data-key="signup.success.close">Sluiten</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section class="section faq" id="faq" aria-labelledby="faq-titel">
-    <h2 id="faq-titel">Veelgestelde vragen</h2>
+    <h2 id="faq-titel" data-key="faq.heading">Veelgestelde vragen</h2>
     <div class="faq__list">
-      <details class="faq__item">
-        <summary>Krijg ik 44 posts?<span class="faq__chevron" aria-hidden="true"></span></summary>
-        <p class="faq__answer">Antwoord volgt &mdash; deze tekst is nog niet aangeleverd in het ontwerp.</p>
-      </details>
-      <details class="faq__item">
-        <summary>Moet ik goed voor de camera zijn?<span class="faq__chevron" aria-hidden="true"></span></summary>
-        <p class="faq__answer">Antwoord volgt &mdash; deze tekst is nog niet aangeleverd in het ontwerp.</p>
-      </details>
-      <details class="faq__item">
-        <summary>Mag ik zelf een locatie kiezen?<span class="faq__chevron" aria-hidden="true"></span></summary>
-        <p class="faq__answer">Antwoord volgt &mdash; deze tekst is nog niet aangeleverd in het ontwerp.</p>
-      </details>
-      <details class="faq__item">
-        <summary>Kan ik me aanmelden als ik ver van Ede woon?<span class="faq__chevron" aria-hidden="true"></span></summary>
-        <p class="faq__answer">Antwoord volgt &mdash; deze tekst is nog niet aangeleverd in het ontwerp.</p>
-      </details>
-      <details class="faq__item">
-        <summary>Hoe worden de vier ondernemers gekozen?<span class="faq__chevron" aria-hidden="true"></span></summary>
-        <p class="faq__answer">Antwoord volgt &mdash; deze tekst is nog niet aangeleverd in het ontwerp.</p>
-      </details>
-      <details class="faq__item">
-        <summary>Wanneer hoor ik of ik geselecteerd ben?<span class="faq__chevron" aria-hidden="true"></span></summary>
-        <p class="faq__answer">Antwoord volgt &mdash; deze tekst is nog niet aangeleverd in het ontwerp.</p>
-      </details>
+      <template data-list="faq.items"></template>
     </div>
   </section>
 
 </main>
 
+<div class="terms" id="terms-overlay" hidden>
+  <div class="terms__backdrop" data-terms-close></div>
+  <div class="terms__dialog" role="dialog" aria-modal="true" aria-labelledby="terms-titel">
+    <div class="terms__bar">
+      <button type="button" class="btn btn--primary terms__close terms__close--desktop" data-terms-close data-key="terms.closeLabel">Sluiten</button>
+    </div>
+    <button type="button" class="terms__close terms__close--sheet" data-terms-close aria-label="Sluiten">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="terms__scroll">
+      <div class="terms__content">
+        <h2 id="terms-titel" class="terms__title" data-key="terms.title">Actievoorwaarden SOLIKE 444</h2>
+        <p class="terms__intro" data-key="terms.intro">SOLIKE 444 is een eenmalige pilotactie van SOLIKE. Vier vrouwelijke ondernemers krijgen de kans om voor &euro;444 excl. btw samen met SOLIKE hun zichtbaarheid een flinke beeldboost te geven.</p>
+        <template data-list="terms.chapters"></template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cookie-banner" id="cookie-banner" role="region" aria-label="Cookiemelding" hidden>
+  <div class="cookie-banner__copy">
+    <p class="cookie-banner__title" data-key="cookies.title">Cookies om van te leren</p>
+    <p class="cookie-banner__text"><span data-key="cookies.messagePrefix">Het zijn alleen analytische cookies om te zien hoe je de site gebruikt. </span><span class="cookie-banner__emphasis" data-key="cookies.messageEmphasis">Niet</span><span data-key="cookies.messageSuffix"> voor advertentie- of trackingcookies.</span></p>
+  </div>
+  <div class="cookie-banner__actions">
+    <button type="button" class="btn btn--accent cookie-banner__accept" id="cookie-accept" data-key="cookies.accept">Accepteren</button>
+    <button type="button" class="cookie-banner__reject" id="cookie-reject" data-key="cookies.reject">Doe maar niet</button>
+  </div>
+</div>
+
+<script src="content.js"></script>
+<script src="render.js"></script>
+<script src="script.js"></script>
+<script src="cookies.js"></script>
 </body>
 </html>

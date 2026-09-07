@@ -4,18 +4,19 @@
    Desktop 720–1024px · Desktop >1024px
    ============================================================ */
 
-/* Let op: dit font komt van een third-party mirror (onlinewebfonts.com),
-   niet van de oorspronkelijke foundry. Controleer of er een geldige
-   licentie voor commercieel gebruik onder ligt voordat dit live gaat;
-   host anders je eigen (gelicenseerde) bestanden op hetzelfde pad. */
+/* Zelf-gehost sinds 2026-08-25 (was eerst een third-party mirror,
+   onlinewebfonts.com) -- bestanden staan in fonts/, door Ruben aangeleverd.
+   Let op: hosting-locatie zegt niets over de licentie zelf. Controleer nog
+   steeds of er een geldige licentie voor commercieel gebruik onder ligt
+   voordat dit live gaat. */
 @font-face {
   font-family: "Cooper Lt BT Bold";
-  src: url("https://db.onlinewebfonts.com/t/bf01e62ae842ea4c690e771ec2427a1f.eot");
-  src: url("https://db.onlinewebfonts.com/t/bf01e62ae842ea4c690e771ec2427a1f.eot?#iefix") format("embedded-opentype"),
-    url("https://db.onlinewebfonts.com/t/bf01e62ae842ea4c690e771ec2427a1f.woff2") format("woff2"),
-    url("https://db.onlinewebfonts.com/t/bf01e62ae842ea4c690e771ec2427a1f.woff") format("woff"),
-    url("https://db.onlinewebfonts.com/t/bf01e62ae842ea4c690e771ec2427a1f.ttf") format("truetype"),
-    url("https://db.onlinewebfonts.com/t/bf01e62ae842ea4c690e771ec2427a1f.svg#Cooper Lt BT Bold") format("svg");
+  src: url("fonts/Cooper%20Lt%20BT%20Bold.eot");
+  src: url("fonts/Cooper%20Lt%20BT%20Bold.eot?#iefix") format("embedded-opentype"),
+    url("fonts/Cooper%20Lt%20BT%20Bold.woff2") format("woff2"),
+    url("fonts/Cooper%20Lt%20BT%20Bold.woff") format("woff"),
+    url("fonts/Cooper%20Lt%20BT%20Bold.ttf") format("truetype"),
+    url("fonts/Cooper%20Lt%20BT%20Bold.svg#Cooper Lt BT Bold") format("svg");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -36,14 +37,46 @@
 
   --font-display: "Cooper Lt BT Bold", "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-accent: "Baloo 2", var(--font-body); /* prijs/knop-tekst, kaart "Dit mag je echt niet missen" (2026-09) */
 
   --page-margin: 24px;
-  --icon-chevron: url("https://www.figma.com/api/mcp/asset/baf5a26b-c5eb-4ecd-96bb-aa7e33ccbe07.svg");
-  --icon-arrow: url("https://www.figma.com/api/mcp/asset/8f62789b-8105-43f8-af20-40efdd93d80c.svg");
+  /* Permanent lokaal sinds 2026-09-07 (Ruben leverde de SVG's rechtstreeks
+     aan) -- staan niet meer op een verlopende Figma-CDN-link. */
+  --icon-chevron: url("img/icon-chevron.svg");
+  --icon-arrow: url("img/icon-arrow.svg");
+
+  /* Vaste breedte-tokens (2026-08-26) -- 1-op-1 gekoppeld aan Figma-variabelen
+     Width/Text-Narrow, Width/Text-Default, Width/Container, Width/Breakout,
+     Width/Hero-Row. Gebruik deze i.p.v. een nieuw los getal te verzinnen --
+     zie project-doc voor de twee bewuste uitzonderingen (quote 640px tussen
+     720-1024px, hero__lead 400px vanaf 1025px). Foto-afmetingen (bv.
+     .hero__media, .portrait--circle) horen hier niet bij -- dat zijn vaste
+     beeldmaten uit Figma, geen content-breedtes. */
+  --width-text-narrow: 480px;
+  --width-text-default: 540px;
+  --width-container: 720px;
+  --width-breakout: 1024px;
+  --width-hero-row: 1200px;
+
+  /* Nieuwe tokens (2026-09) -- aanbiedingskaart "Dit mag je echt niet missen",
+     Figma-redesign nodes 2109:1542 t/m 1995:1965. Bewust ALS nieuwe Variables
+     toegevoegd i.p.v. hergebruikt van de bestaande purple-1/orange-1 etc. --
+     het zijn net iets andere tinten (donkerder paars, warmer oranje), en Ruben
+     hecht expliciet aan exacte kleurwaarden (zie project-doc). --cream
+     (#fff4e8) komt al exact overeen met de bestaande --cream en is dus NIET
+     opnieuw toegevoegd. */
+  --purple-700: #57007c;
+  --orange-700: #f63d00;
+  --orange-500: #ff7b00;
+  --neutrals-25: #f9f8f6;
+  --neutrals-200: #ccc6bd;
+  --neutrals-975: #060504;
+  --neutrals-950: #0d0b08;
 }
 
 /* ---------- reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: hidden; } /* de kortingsbadge op de nieuwe .make-kaart steekt bewust buiten de kaart uit (2026-09) */
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   margin: 0;
@@ -77,28 +110,63 @@ h1, h2 {
 }
 .section__copy {
   width: 100%;
-  max-width: 540px;
+  max-width: var(--width-text-default);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
+  position: relative; /* zonder dit wint de gepositioneerde .portrait--circle (position:relative)
+                          altijd de tekenvolgorde van deze statische box, ongeacht DOM-volgorde --
+                          zie project-doc (2026-08-27) */
+  z-index: 1;
 }
 .section__copy p { font-size: 18px; line-height: 1.5; width: 100%; }
 
-.portrait--circle {
+.photo-frame {
+  /* Wrapper om de foto -- op zichzelf onzichtbaar/zonder styling onder 720px (gewoon
+     100% breed, net als .portrait--circle hiervoor deed), maar vanaf 720px het "geneste
+     max-width container"-kader waar de foto in breekt (zie hieronder). */
   width: 100%;
-  max-width: 341px;
-  aspect-ratio: 341 / 246;
-  border-radius: 288px;
+}
+.portrait--circle {
+  /* "Circle" is legacy naming -- het is een pil/ovaal, geen cirkel (zie Figma-redesign 2026-08-26).
+     Onder 720px: liggend ovaal (breder dan hoog), overlapt de kop eronder een beetje.
+     Figma zelf geeft -24px overlap, maar dat is gemeten bij hun 44px-titel; onze titel is
+     hier kleiner (32-38px), dus bij een letterlijke -24px verdwijnt een te groot deel van de
+     tekst achter de foto. -40px (= section-gap 24px + 16px overlap) houdt hetzelfde visuele
+     effect maar leesbaar op onze kleinere tekstgrootte. */
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto -40px; /* auto links/rechts centreert 'm in .photo-frame, net als voorheen in .section */
+  aspect-ratio: 3 / 2; /* liggend: 3 breed op 2 hoog, vaste verhouding van Ruben (2026-08-27) */
+  /* Cornerradius = 1/3 van de langste zijde (Rubens spec, bv. 450x300 -> radius 150). Bij een
+     vaste aspect-ratio kan dat als percentage van breedte/hoogte apart uitgedrukt worden zodat
+     de radius altijd exact 1/3 van de langste zijde blijft, op elke schaal:
+     liggend (3w:2h, breedte is de langste zijde) -> radius/breedte=33.333%, radius/hoogte=50%. */
+  border-radius: 33.333% / 50%;
   overflow: hidden;
+  position: relative;
 }
 .portrait--circle img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* De brongfoto is gemaakt/gecropt voor het staande (2:3) frame -- daar toont object-fit:cover
+     'm dus al helemaal zonder bijsnijden. In het liggende (3:2) frame (onder 720px) is de foto
+     wél te hoog en moet er verticaal iets afvallen; object-position stuurt welk deel zichtbaar
+     blijft (0% = bovenkant, 100% = onderkant). Gezicht + camera zitten in het bovenste deel van
+     de foto, dus bovenaan uitgelijnd i.p.v. het midden (dat sneed door de camera/kin) of de
+     onderkant (die toonde alleen rok/middel). Kalibreer verder op gevoel als het net niet klopt. */
+  object-position: center top;
 }
 
-/* ---------- buttons ---------- */
+/* ---------- buttons ----------
+   Eén gedeelde knop-basis voor de hele site (2026-09: hover/disabled-state
+   toegevoegd n.a.v. het button-component "button/campagne/primair" in Figma,
+   dat naast de standaardstaat ook een hover/disabled-variant bevat -- Figma
+   gaf via de MCP alleen de standaardkleuren terug, dus de exacte hover-/
+   disabled-kleuren van dat component zijn hier benaderd i.p.v. 1-op-1
+   overgenomen. Check bij Ruben of dit voldoende dicht bij het component zit. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -111,10 +179,24 @@ h1, h2 {
   font-size: 18px;
   text-decoration: none;
   cursor: pointer;
+  transition: filter 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  filter: none;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 .btn--primary {
   color: var(--cream);
   background: linear-gradient(100deg, var(--purple-1) 20%, var(--purple-2) 100%);
+}
+.btn--accent {
+  color: var(--cream);
+  background: linear-gradient(191deg, var(--orange-2) 1%, var(--orange-1) 99%);
 }
 .btn--block { width: 100%; }
 
@@ -149,7 +231,23 @@ h1, h2 {
    ============================================================ */
 .hero {
   width: 100%;
-  background: linear-gradient(200deg, var(--orange-1) 0%, var(--orange-2) 100%);
+  position: relative;
+  z-index: 0;
+  overflow: hidden; /* de shape mag buiten het frame vallen, net als in Figma */
+  /* Extra shape in de hero-vulling, naast het kleurverloop (Figma: pattern-fill met
+     horizontalAlignment:CENTER + verticalAlignment:END, oftewel "bottom-center").
+     Twee verschillende shapes: deze (onder 720px) komt uit Figma-frame "Frame 79"
+     (719x800), de variant vanaf 720px (zie media query) uit "Frame 75" (1376x822).
+     Als losse achtergrondlaag i.p.v. ::before, zodat background-position:center bottom
+     Figma's tegel-uitlijning 1-op-1 vertaalt (incl. het asymmetrisch bijsnijden zodra
+     de hero smaller is dan de shape-tegel). */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='719' height='800' viewBox='0 0 719 800'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='30%25' y1='0%25' x2='70%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23FF5A00'/%3E%3Cstop offset='100%25' stop-color='%23FF8A00'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='-127' y='82' width='790' height='1186' rx='605.47' fill='url(%23g)'/%3E%3C/svg%3E"),
+    linear-gradient(200deg, var(--orange-1) 0%, var(--orange-2) 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center bottom, center center;
+  background-size: 719px 800px, cover;
+  padding: 24px 0; /* header-padding: 24px onder 720px, 48px vanaf 720px (zie media query) */
 }
 .hero__inner {
   display: flex;
@@ -157,28 +255,34 @@ h1, h2 {
   align-items: center;
 }
 .hero__media {
+  order: -1; /* mobiel/tablet: plaatje staat boven de tekst */
   width: 100%;
   max-width: 423px;
-  aspect-ratio: 423 / 510;
+  aspect-ratio: 1753 / 1988; /* beeldverhouding van de echte foto (img/hero.png) -- zo past de
+                                 foto precies in het frame zonder bijsnijden of lege randen */
   position: relative;
+  z-index: 0; /* en de tekst tekent zich straks boven het plaatje in het overlapgebied */
   overflow: hidden;
   margin-bottom: -130px;
 }
 .hero__image {
   position: absolute;
-  width: 84%;
-  height: 84%;
-  left: 6%;
-  top: -2%;
-  object-fit: contain;
+  max-width: none; /* overschrijft de globale "img { max-width: 100% }" */
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  object-fit: contain; /* toont de hele foto, niets wordt afgesneden */
 }
 .hero__copy {
+  position: relative;
+  z-index: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 12px 24px 48px;
+  padding: 0 24px; /* verticale ruimte komt nu van .hero zelf (header-padding) */
 }
 .hero__title { width: 100%; color: var(--cream); text-align: center; }
 .hero__title h1 {
@@ -239,31 +343,19 @@ h1, h2 {
   text-align: center;
   letter-spacing: -0.02em;
   line-height: 1.5;
-  max-width: 540px;
+  max-width: var(--width-text-default);
 }
 .hero__cta .btn { width: 100%; max-width: 320px; }
 
 /* ============================================================
    WHY / MAKE (image + copy sections on cream bg)
    ============================================================ */
-.why, .make { background: var(--bg-page); }
-.why h2, .make h2 {
+.why { background: var(--bg-page); }
+.make { background: var(--cream); } /* Figma-redesign 2026-09: nieuwe kaart-sectie staat op cream, niet bg-page */
+.why h2 {
   font-size: 32px;
   color: var(--purple-1);
-}
-.make .make__list-wrap {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 0;
-}
-.make__list-title {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 21px;
-  color: var(--purple-2);
+  text-align: left;
 }
 .arrow-list {
   display: flex;
@@ -284,9 +376,173 @@ h1, h2 {
   width: 18px;
   height: 17px;
   margin-top: 3px;
-  background-color: var(--text-headlines);
+  background-color: var(--purple-2); /* paars i.p.v. bijna-zwart, zoals in Figma */
   -webkit-mask: var(--icon-arrow) center / contain no-repeat;
   mask: var(--icon-arrow) center / contain no-repeat;
+}
+
+/* ============================================================
+   MAKE -- aanbiedingskaart "Dit mag je echt niet missen"
+   Figma-redesign 2026-09 (nodes 2109:1542 t/m 1995:1915) -- vervangt de
+   opsomming door een losstaande prijskaart die naar het aanmeldformulier
+   linkt. De foto (.portrait--circle) blijft hier op alle breekpunten de
+   liggende basisvorm (400x300, zie basisregel hierboven) -- i.t.t. .why
+   breekt .make 'm dus nooit uit naar de staande 1024px-pil. Zie project-doc
+   voor de vergelijking met de oude opzet en openstaande punten (font Baloo
+   2, badge-icoon nog op tijdelijke Figma-CDN-link).
+   ============================================================ */
+.make h2 {
+  font-size: 54px;
+  line-height: 1;
+  letter-spacing: -2.7px;
+  color: var(--purple-700);
+  text-align: left;
+}
+.make .portrait--circle { margin-bottom: -36px; } /* kleiner overlapje dan .why (-40px), Figma-waarde voor deze kaart */
+.make .section__copy p { color: var(--neutrals-975); }
+
+.make__row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+.make__intro {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.offer-card {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  padding: 24px;
+  background: var(--neutrals-25);
+  border: 1px solid var(--neutrals-200);
+  border-radius: 12px;
+}
+.offer-card__badge {
+  /* Losse SVG (door Ruben aangeleverd, img/badge-korting.svg) i.p.v. een
+     Figma-CDN-link -- zo kan hij 'm zelf vervangen door een eigen SVG met
+     dezelfde bestandsnaam. Bestandsnaam staat in content.js (make.card.badgeIcon),
+     zie render.js voor de [data-src-key]-koppeling. Maat/positie 1-op-1 uit
+     Figma (node 2109:784, w139/h135, top -59px, right -26px). */
+  position: absolute;
+  top: -59px;
+  right: -26px;
+  width: 139px;
+  height: 135px;
+  pointer-events: none;
+}
+
+.offer-card__body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.offer-card__title-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.offer-card__title {
+  flex: 1 1 0;
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.88px;
+  color: var(--text-headlines);
+}
+.offer-card__title-spacer {
+  /* Ruimte die het badge-icoon rechtsboven vrijhoudt zodat de titel er niet
+     onder doorloopt (Figma: Frame 1000004341, vaste 90px). */
+  flex: none;
+  align-self: stretch;
+  width: 90px;
+}
+.offer-card__content {
+  /* Beschrijving, opsomming (pijltjes) en de losse kortingszin staan in
+     Figma allemaal met dezelfde 12px-afstand tot elkaar -- vandaar deze
+     aparte gap-groep i.p.v. de 8px van .offer-card__body. */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.offer-card__desc {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-headlines);
+  width: 100%;
+}
+.offer-card__toggle {
+  display: inline;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-left: 4px;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.offer-card__list li { font-size: 16px; }
+.offer-card__price-note {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-headlines);
+  width: 100%;
+}
+
+.offer-card__price {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.offer-card__price-was {
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  color: var(--neutrals-950);
+}
+.offer-card__price-was-amount { text-decoration: line-through; }
+.offer-card__price-now {
+  /* Zelfde font + grootte als .offer-card__title (2026-09-07, op Rubens
+     verzoek) -- niet meer los 54px/italic. */
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.88px;
+  color: var(--neutrals-950);
+}
+.offer-card__price-excl {
+  font-family: var(--font-accent);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  color: var(--neutrals-950);
+  margin-top: -4px;
+}
+
+.offer-card__cta {
+  /* Kleur/vorm komen nu van .btn.btn--primary (dezelfde paarse knop als de
+     rest van de site); deze class regelt alleen nog de volledige breedte. */
+  width: 100%;
+}
+.offer-card__scarcity {
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  color: var(--text-headlines);
 }
 
 /* ============================================================
@@ -294,12 +550,10 @@ h1, h2 {
    ============================================================ */
 .for-you {
   background: linear-gradient(60deg, var(--purple-2) 10%, var(--purple-1) 100%);
-  padding-top: 96px;
-  padding-bottom: 96px;
 }
 .for-you__inner {
   width: 100%;
-  max-width: 720px;
+  max-width: var(--width-container);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -313,7 +567,7 @@ h1, h2 {
 }
 .for-you__body {
   width: 100%;
-  max-width: 480px;
+  max-width: var(--width-text-narrow);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -325,9 +579,23 @@ h1, h2 {
   font-size: 18px;
   line-height: 1.5;
 }
-.quote {
+.for-you__list {
   width: 100%;
-  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 20px;
+  list-style: disc;
+}
+.for-you__list li {
+  color: var(--cream);
+  font-size: 18px;
+  line-height: 1.5;
+}
+.for-you__list li::marker { color: var(--cream); }
+.quote { /* zie project-doc: quote is bewust breder dan .for-you__body (480px), staat er als sibling náást */
+  width: 100%;
+  max-width: var(--width-text-default);
   padding: 24px 0;
   font-family: var(--font-body);
   font-style: italic;
@@ -344,51 +612,65 @@ h1, h2 {
    ============================================================ */
 .signup {
   background: linear-gradient(220deg, var(--orange-2) 0%, var(--orange-1) 100%);
-  padding-top: 24px;
-  padding-bottom: 48px;
+  padding: 48px 8px;
   gap: 0;
 }
-.signup__portrait {
-  width: 100%;
-  max-width: 320px;
-  aspect-ratio: 320 / 578;
-  margin-bottom: -264px;
-  position: relative;
-  z-index: 2;
-}
-.signup__portrait img { width: 100%; height: 100%; object-fit: cover; }
 
-.signup__card {
+/* -- geen foto meer op mobiel/tablet (Ruben's herziene design, zie project-doc) --
+   vanaf 720px komt de foto terug als losse decoratieve laag achter de kaart. */
+.signup__row {
   width: 100%;
-  max-width: 480px;
-  background: var(--cream);
-  border-radius: 8px;
-  padding: 84px 24px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.signup__portrait { display: none; }
+
+.signup__stack {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  z-index: 1;
+  gap: 24px;
 }
-.signup__intro {
+.signup__heading {
   width: 100%;
-  padding-left: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.signup__heading h2 {
+  font-size: 48px;
+  color: var(--cream);
+  letter-spacing: -0.06em;
+  line-height: 1.104;
+  white-space: nowrap;
+}
+
+/* -- cream kaart met het formulier -- */
+.signup__card {
+  width: 100%;
+  background: var(--cream);
+  border-radius: 8px;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-  margin-bottom: 36px;
+  align-items: center;
 }
-.signup__intro h2 {
-  font-size: 48px;
-  color: var(--orange-1);
-  letter-spacing: -0.06em;
+.signup__card-inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
-.signup__intro p {
+.signup__card-inner[hidden] { display: none; }
+.signup__cadeau {
+  width: 100%;
+  text-align: left;
   font-size: 18px;
   line-height: 1.5;
   color: var(--text-headlines);
-  margin-top: 8px;
 }
 
 .signup__form {
@@ -399,15 +681,16 @@ h1, h2 {
 }
 .field { display: flex; flex-direction: column; gap: 4px; }
 .field label {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--text-body);
   padding: 0 8px;
 }
 .field input[type="text"],
+.field input[type="email"],
 .field textarea {
   width: 100%;
-  border: 1px solid var(--border-gray);
+  border: 1px solid transparent; /* geen zichtbare rand meer (Ruben's herziene design) -- transparent i.p.v. "none" zodat de foutstaat-rand hieronder geen layout-sprong geeft */
   border-radius: 8px;
   background: #fff;
   padding: 15px 16px;
@@ -418,13 +701,44 @@ h1, h2 {
 .field textarea::placeholder { color: var(--placeholder); }
 .field textarea { resize: vertical; font-family: var(--font-body); }
 
+.field__counter {
+  align-self: flex-end;
+  font-size: 12px;
+  color: var(--placeholder);
+  padding: 0 8px;
+}
+.field__counter--max { color: var(--orange-1); }
+
+.field__error {
+  display: none;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #c0392b;
+  padding: 0 8px;
+}
+.field--invalid input[type="text"],
+.field--invalid input[type="email"],
+.field--invalid textarea {
+  border-color: #c0392b;
+}
+.field--invalid .field__error { display: block; }
+
 .field--checkbox {
-  flex-direction: row;
+  /* grid i.p.v. flex+flex-wrap: bij flex-wrap breekt de regel op basis van de
+     ONGEKRIMPTE (hypothetische) breedte van het label -- dus zodra de tekst niet
+     op één regel past, valt het HELE label als geheel op een nieuwe regel i.p.v.
+     ernaast te blijven staan en zelf over twee regels te wrappen. Grid-tracks
+     kennen dat probleem niet: het label krijgt gewoon een vaste kolombreedte en
+     wrapt daarbinnen, ook als dat twee (of meer) regels wordt. */
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  column-gap: 12px;
+  row-gap: 12px;
   align-items: flex-start;
-  gap: 12px;
 }
 .field--checkbox input[type="checkbox"] {
-  flex: none;
+  grid-column: 1;
+  grid-row: 1;
   width: 32px;
   height: 32px;
   margin: 0;
@@ -432,30 +746,89 @@ h1, h2 {
   border: 1px solid var(--border-gray);
   accent-color: var(--purple-1);
 }
+.field--checkbox.field--invalid input[type="checkbox"] { border-color: #c0392b; }
 .field--checkbox label {
+  grid-column: 2;
+  grid-row: 1;
   font-size: 14px;
   line-height: 1.5;
   padding: 0;
 }
 .field--checkbox a { text-decoration: underline; }
+.field--checkbox .field__error { grid-column: 2; padding: 0; }
+
+.signup__form-status {
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  padding: 0 8px;
+}
+.signup__form-status:empty { display: none; }
+.signup__form-status--success { color: #2e7d32; }
+.signup__form-status--error { color: #c0392b; }
+
+/* -- succesmelding: vervangt het hele formulier na een geslaagde aanmelding
+      (ontwerp voor het eerste breakpoint, hier vertaald naar de andere 3) -- */
+.signup__success {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  text-align: center;
+}
+.signup__success[hidden] { display: none; }
+.signup__success-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.signup__success-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 38px;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--text-headlines);
+}
+.signup__success-subtitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+.signup__success-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.signup__success-body p {
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+.signup__success-close { padding: 16px 60px; }
 
 /* ============================================================
    FAQ
    ============================================================ */
 .faq {
-  padding-top: 96px;
-  padding-bottom: 96px;
   align-items: center;
 }
 .faq h2 {
   font-size: 38px;
   color: var(--purple-1);
   text-align: center;
-  max-width: 720px;
+  max-width: var(--width-container);
 }
 .faq__list {
   width: 100%;
-  max-width: 480px;
+  max-width: var(--width-text-narrow);
   background: #fff;
   padding: 0 16px;
 }
@@ -493,58 +866,457 @@ h1, h2 {
 }
 
 /* ============================================================
+   ACTIEVOORWAARDEN (overlay)
+   Mobiel/tablet: bottomsheet met een paarse ronde sluitknop (54x54).
+   Vanaf 720px: schermvullende overlay, content max-width 1024px,
+   met een sluitknop (in de stijl van de site) boven in die 1024px-kolom.
+   ============================================================ */
+.terms {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+.terms[hidden] { display: none; }
+.terms__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 13, 14, 0.55);
+}
+.terms__dialog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-page);
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+}
+.terms__bar { display: none; }
+.terms__close--desktop { display: none; }
+.terms__close--sheet {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--purple-1);
+  color: var(--cream);
+  font-size: 26px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.terms__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 88px var(--page-margin) 48px;
+}
+.terms__content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.terms__title {
+  font-size: 32px;
+  color: var(--purple-1);
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+.terms__intro {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+.terms__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.terms__section h3 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--purple-1);
+}
+.terms__section p {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+.terms__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+.terms__list li {
+  position: relative;
+  padding-left: 20px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-body);
+}
+.terms__list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--purple-1);
+}
+
+@media (min-width: 720px) {
+  .terms__dialog {
+    inset: 0;
+    max-height: none;
+    border-radius: 0;
+  }
+  .terms__close--sheet { display: none; }
+  .terms__bar {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: var(--width-breakout);
+    margin: 0 auto;
+    padding: 24px var(--page-margin) 0;
+    flex: none;
+  }
+  .terms__close--desktop {
+    display: inline-flex;
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+  .terms__scroll { padding: 0 var(--page-margin) 96px; }
+  .terms__content {
+    max-width: var(--width-breakout);
+    margin: 0 auto;
+    gap: 40px;
+    padding-top: 24px;
+  }
+  .terms__title { font-size: 48px; }
+  .terms__section h3 { font-size: 21px; }
+}
+
+/* ============================================================
+   COOKIEBALK
+   ============================================================
+   Los, zwevend kaartje onder in beeld (i.p.v. een balk die de volle
+   breedte pakt) -- ontwerp van Ruben, 2026-08-25, aangeleverd voor de
+   twee middelste breakpoints (Tablet 480-719px en Desktop 720-1024px).
+   De positie in dat Figma-bestand zelf is niet letterlijk bedoeld
+   (los overlay-element, niet op de echte plek) -- de sticky-onderkant-
+   positionering hieronder komt uit Rubens toelichting in de chat:
+   - < 720px: schaalt mee vanaf 640px naar beneden, altijd min. 8px
+     lucht tot de zijkanten, 8px van de onderkant.
+   - >= 720px: capt op 640px breed, 12px van de onderkant. */
+.cookie-banner {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  width: calc(100% - 16px);
+  max-width: 640px;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--cream);
+  border-radius: 8px;
+  box-shadow: 0 16px 24px rgba(12, 13, 14, 0.08);
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-banner__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cookie-banner__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 25px;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--purple-1);
+}
+.cookie-banner__text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--text-body);
+}
+.cookie-banner__emphasis {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cookie-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.cookie-banner__reject {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 16px 36px;
+  border: none;
+  border-radius: 60px;
+  background: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--orange-1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.cookie-banner__accept {
+  height: 46px;
+  padding: 16px 36px;
+  font-size: 14px;
+}
+
+@media (min-width: 720px) {
+  .cookie-banner {
+    bottom: 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .cookie-banner__copy { flex: 1; }
+  .cookie-banner__actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+}
+
+/* ============================================================
    TABLET 480–719px
    ============================================================ */
 @media (min-width: 480px) {
   .hero__lead,
   .for-you__body p,
   .for-you__body,
-  .section__copy { max-width: 540px; }
+  .section__copy { max-width: var(--width-text-default); }
 
-  .why h2, .make h2 { font-size: 38px; letter-spacing: -0.05em; }
-  .make h2 { max-width: 720px; }
+  .why h2 { font-size: 38px; letter-spacing: -0.05em; }
   .for-you h2 { font-size: 38px; letter-spacing: -0.04em; }
   .quote { font-size: 38px; }
   .faq h2 { font-size: 38px; }
+
+  .signup__stack { max-width: var(--width-text-default); }
+  .signup__heading { padding-left: 36px; }
+  .signup__heading h2 { font-size: 60px; line-height: 0.883; }
+  .signup__card { padding: 24px; }
+  .signup__card-inner { padding: 0 16px; }
 }
 
 /* ============================================================
    DESKTOP 720–1024px
    ============================================================ */
 @media (min-width: 720px) {
-  .hero__inner {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: center;
-  }
-  .hero__copy {
-    flex: 1 1 0;
-    padding: 12px 24px 48px;
-    margin-right: -132px;
-  }
-  .hero__media {
-    flex: 1 1 0;
-    max-width: 423px;
-    aspect-ratio: 423 / 510;
-    margin-bottom: 0;
-    align-self: center;
+  /* header-padding: 48px boven/onder vanaf 720px (was 24px) */
+  /* vanaf hier ook de andere hero-shape (Figma-frame "Frame 75", 1376x822 --
+     apart van de kleinere variant onder 720px hierboven), zelfde bottom-center-uitlijning */
+  .hero {
+    padding: 48px 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1376' height='822' viewBox='0 0 1376 822'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='30%25' y1='0%25' x2='70%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23FF5A00'/%3E%3Cstop offset='100%25' stop-color='%23FF8A00'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='131' y='137' width='983' height='1475' rx='605.47' fill='url(%23g)'/%3E%3C/svg%3E"),
+      linear-gradient(200deg, var(--orange-1) 0%, var(--orange-2) 100%);
+    background-repeat: no-repeat, no-repeat;
+    background-position: center bottom, center center;
+    background-size: 1376px 822px, cover;
   }
 
-  .why, .make {
+  /* overige componenten: 96px boven/onder vanaf 720px (was 48px) */
+  .why, .make, .for-you, .signup, .faq {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  /* De rij (foto + tekst naast elkaar) moet als geheel gecentreerd staan in .hero,
+     niet alleen de tekst binnenin zichzelf (dat laatste doet .hero__title{text-align:center}
+     al apart, zie hieronder). max-width + margin:auto op .hero__inner zelf regelt dat --
+     vanaf hier (720px) i.p.v. pas vanaf 1025px, zodat het ook in de 720-1024px-reeks
+     consistent gecentreerd is i.p.v. willekeurig vol-breed.
+     Figma-redesign 2026-08-27: Ruben heeft beide kolommen nu gelijk opgebouwd -- tekst
+     én foto zijn allebei flex:1 1 0 (evenredig groeiend, 50/50) en allebei 100% van de
+     rij-hoogte, met de content verticaal gecentreerd i.p.v. onderaan uitgelijnd. Dit
+     geldt nu voor zowel 720-1024px als >1024px identiek (geen aparte 656px/114px/-144px-
+     waarden meer voor het grotere breekpunt, zie project-doc). */
+  .hero__inner {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 24px;
-    max-width: 1024px;
+    max-width: var(--width-hero-row);
     margin: 0 auto;
   }
-  .portrait--circle { flex: none; }
-  .why h2, .make h2 { font-size: 48px; letter-spacing: -0.05em; }
+  .hero__copy {
+    flex: 1 1 0;
+    align-self: stretch; /* 100% van de rij-hoogte, matcht Figma's "self-stretch" op de tekstkolom */
+    justify-content: center; /* content verticaal gecentreerd binnen die volle hoogte */
+    padding: 0 24px;
+    margin-right: -72px;
+  }
+  .hero__media {
+    /* Ruben heeft de foto nu ook flex:1 1 0 gemaakt (was hiervoor een vaste breedte
+       van 480px/656px) -- de foto groeit dus evenredig mee met de tekstkolom, gecapt
+       op max-width 540px (waarna de aspect-ratio de hoogte bepaalt, vandaar geen
+       aparte max-height nodig). */
+    order: 0; /* vanaf hier staan plaatje en tekst naast elkaar, niet meer gestapeld */
+    flex: 1 1 0;
+    width: auto;
+    max-width: var(--width-text-default); /* 540px, zelfde token als de tekstkolommen elders */
+    aspect-ratio: 1753 / 1988;
+    margin-bottom: 0;
+    align-self: center;
+  }
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    object-fit: contain;
+  }
 
-  .for-you h2 { font-size: 48px; max-width: 720px; }
+  /* .why/.make vanaf 720px: blijft een kolom (foto boven, tekst onder, zelfde
+     DOM-volgorde als onder 720px) maar de foto (vast 300x400, staande pil i.p.v.
+     de liggende pil onder 720px) breekt uit naar één kant en de tekstkolom (vast
+     max-width 480px) schuift met een grote negative margin omhoog, zodat hij het
+     onderste deel van de foto overlapt -- de foto blijft optisch op de achtergrond
+     omdat .photo-frame eerder in de DOM staat dan .section__copy en die er dus
+     overheen tekent (geen z-index nodig). Bij .why staat de foto links en de tekst
+     rechts, bij .make precies omgekeerd.
+     Techniek (op Rubens verzoek herbouwd met echte geneste containers i.p.v. de
+     calc()-marges van de vorige versie): .why/.make zelf is het "buitenste" kader
+     (max-width 720px), .photo-frame daarbinnen is het "binnenste" kader (max-width
+     1024px) -- omdat de binnenste breder is dan de buitenste, en beide met
+     margin:auto gecentreerd worden, breekt .photo-frame vanzelf uit .why/.make zodra
+     die smaller is dan 1024px. Exact dezelfde structuur als je in Figma hebt
+     gebouwd, nu met echte HTML-nesting (zie de nieuwe .photo-frame-div in
+     index.html) i.p.v. een berekende margin.
+     (Figma-redesign 2026-08-26, nodes 1541:3093/1380:1597 e.v.) */
+  /* .why gebruikt nog de "geneste containers"-breakout-techniek (foto breekt uit
+     naar 1024px, tekst schuift eroverheen met een negatieve margin) -- zie
+     project-doc voor de volledige uitleg. .make gebruikt sinds de kaart-redesign
+     (2026-09) een heel andere, eenvoudigere opzet (twee kolommen naast elkaar,
+     geen breakout) -- zie .make__row/.offer-card hierboven. */
+  .why {
+    max-width: var(--width-container); /* buitenste kader */
+    margin: 0 auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .why .photo-frame {
+    display: flex;
+    align-self: flex-start;
+    width: var(--width-breakout);
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: -336px;
+    padding-left: 60px;
+  }
+  .why .portrait--circle {
+    width: 300px;
+    max-width: none;
+    aspect-ratio: 2 / 3;
+    border-radius: 50% / 33.333%;
+    margin: 0;
+  }
+  .why .portrait--circle img {
+    object-position: center center;
+  }
+  .why .section__copy {
+    align-self: flex-end; /* rechts uitgelijnd tegen de 720px-rand van .why */
+    width: 100%;
+    max-width: var(--width-text-default); /* 540px, niet 480 -- zelfde breedte als de tekstkolom elders */
+  }
+  .why h2 { font-size: 48px; letter-spacing: -0.05em; }
 
-  .signup__portrait { margin-bottom: -348px; }
-  .signup { flex-direction: column; }
+  /* .make vanaf 720px: geen breakout meer, gewoon twee kolommen naast elkaar
+     (intro + kaart) binnen een 1024px-kader. (Figma-redesign 2026-09) */
+  .make__row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 48px;
+    max-width: var(--width-breakout);
+    margin: 0 auto;
+  }
+  .make__intro { flex: 1 1 0; min-width: 0; }
+  .offer-card { flex: 1 1 0; min-width: 0; margin-top: 144px; }
+
+  .for-you h2 { font-size: 48px; max-width: var(--width-container); }
+  /* .for-you__body raakte via de tablet-regel hierboven (480-719px, gedeeld met .quote/
+     .hero__lead/.section__copy) op 540px breed -- die 540px bleef zonder reset ook vanaf
+     720px hangen. Hier expliciet terug naar 480px, zodat quote (540) en de rest van de
+     tekst (480) verschillend blijven, zoals in Figma. */
+  .for-you__body { max-width: var(--width-text-narrow); }
+
+  /* -- signup: zelfde ontwerp voor 720-1024 en >1024, vandaar één gedeelde regel --
+     de foto komt terug als decoratieve laag achter de kaart, alle getallen hieronder zijn
+     percentages van de 1024px Figma-referentiebreedte zodat het ook tussen 720-1024px meeschaalt.
+     (verticale padding: zie hierboven, 96px boven/onder samen met de andere componenten) */
+  .signup { padding-left: 8px; padding-right: 8px; }
+  .signup__row {
+    max-width: var(--width-breakout);
+    margin: 0 auto;
+    justify-content: center; /* centreert het onzichtbare 720px-frame in de 1024px-rij */
+  }
+  .signup__portrait {
+    display: block;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 5.859%; /* 60/1024 */
+    width: 35.156%; /* 360/1024 */
+    aspect-ratio: 1020 / 1842; /* = de echte beeldverhouding van img/aanmelden-foto.png */
+  }
+  .signup__portrait img { width: 100%; height: 100%; object-fit: cover; }
+  .signup__stack {
+    max-width: 70.3125%; /* 720/1024 -- onzichtbaar frame, gecentreerd door .signup__row hierboven */
+    width: 100%;
+    padding: 0 16px;
+    align-items: flex-end; /* kop + kaart liggen rechts uitgelijnd in dit frame, en vallen zo over de foto heen */
+    position: relative;
+    z-index: 1;
+  }
+  .signup__heading {
+    width: 69.7674%; /* 480 / (720 - 2*16px stack-padding) = 480/688 */
+    padding-left: 36px;
+    justify-content: flex-start;
+  }
+  .signup__card {
+    width: 69.7674%; /* 480/688, zie hierboven */
+    max-width: var(--width-text-narrow); /* harde cap zodra de rij bij >1024px zijn max-width bereikt */
+  }
+
   .faq h2 { font-size: 48px; }
 }
 
@@ -552,17 +1324,16 @@ h1, h2 {
    DESKTOP >1024px
    ============================================================ */
 @media (min-width: 1025px) {
-  .hero__inner { max-width: 1200px; margin: 0 auto; align-items: flex-end; }
-  .hero__copy { margin-right: -144px; padding-bottom: 168px; }
-  .hero__title h1 { font-size: 114px; }
-  .hero__media { max-width: 656px; aspect-ratio: 656 / 774; align-self: center; }
-  .hero__image { width: 111%; height: 107%; left: 0.6%; top: -3.4%; object-fit: cover; }
-  .hero__lead { max-width: 400px; }
+  /* Hero: Figma-redesign 2026-08-27 -- de opmaak vanaf 720px (gelijke flex:1 1 0-kolommen,
+     100% hoogte, gecentreerd) geldt nu ongewijzigd door tot >1024px. De losse 656px-foto,
+     114px-kop en 400px-lead-cap van vóór deze redesign zijn vervallen; zie project-doc. */
 
-  .why, .make { max-width: 1200px; }
-  .section__copy { max-width: 540px; }
-  .why h2, .make h2 { font-size: 48px; }
+  .why h2 { font-size: 48px; }
 
-  .signup__portrait { margin-bottom: -372px; max-width: 341px; }
-  .signup__card { max-width: 480px; }
+  /* quote: vanaf hier weer de oorspronkelijke smallere/asymmetrische opmaak,
+     de 640px/gecentreerde versie in het 720px-blok hierboven was alleen voor
+     720-1024px bedoeld -- Figma-redesign 2026-08-26 */
+  .quote { max-width: var(--width-text-default); text-align: left; }
+  .quote p:first-child { text-align: left; }
+  .quote p:last-child { text-align: right; }
 }
